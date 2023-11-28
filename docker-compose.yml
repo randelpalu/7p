@@ -12,6 +12,15 @@ services:
     depends_on:
       - mysql
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.local
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "8080:8080"
+
   mysql:
     image: mysql:5.7
     environment:
