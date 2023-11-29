@@ -133,11 +133,12 @@ class CustomersTest extends TestCase
         $res->assertStatus(422)
             ->assertJsonValidationErrors(['password'])
             ->assertJsonFragment([
-                "message" => "The password field must be at least 8 characters. (and 1 more error)",
-                "errors" => [
-                    "password" => [
-                        "The password field must be at least 8 characters.",
-                        "The password field format is invalid."
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => [
+                    'password' => [
+                        'The password field must be at least 8 characters.',
+                        'The password field format is invalid.'
                     ]
                 ]
             ]);
@@ -157,10 +158,11 @@ class CustomersTest extends TestCase
         $res->assertStatus(422)
             ->assertJsonValidationErrors(['password'])
             ->assertJsonFragment([
-                "message" => "The password field format is invalid.",
-                "errors" => [
-                    "password" => [
-                        "The password field format is invalid."
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => [
+                    'password' => [
+                        'The password field format is invalid.'
                     ]
                 ]
             ]);
@@ -180,10 +182,11 @@ class CustomersTest extends TestCase
         $res->assertStatus(422)
             ->assertJsonValidationErrors(['username'])
             ->assertJsonFragment([
-                "message" => "The username field format is invalid.",
-                "errors" => [
-                    "username" => [
-                        "The username field format is invalid."
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => [
+                    'username' => [
+                        'The username field format is invalid.'
                     ]
                 ]
             ]);
@@ -204,7 +207,8 @@ class CustomersTest extends TestCase
         $res->assertStatus(422)
             ->assertJsonValidationErrors(['username'])
             ->assertJsonFragment([
-                'message' => 'The username has already been taken.',
+                'status' => 'error',
+                'message' => 'Validation failed',
                 'errors' => [
                     'username' => ['The username has already been taken.']
                 ]
@@ -228,6 +232,144 @@ class CustomersTest extends TestCase
 
         $updatedCustomer = Customer::find(1);
         $this->assertNotEquals($originalCustomer['password'], $updatedCustomer['password']);
+    }
+
+    public function test_update_customer_with_empty_username(): void
+    {
+        $data = [
+            'first_name' => 'John',
+            'last_name' => 'Lastname',
+            'dob' => '1990-11-11',
+            'username' => '',
+            'password' => '12Password'
+        ];
+
+        $res = $this->putJson('/api/customers/1', $data, $this->getBasicAuthHeaders());
+
+        $res->assertStatus(422)
+            ->assertJsonValidationErrors(['username'])
+            ->assertJsonFragment([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => [
+                    'username' => ['The username field is required.']
+                ]
+            ]);
+    }
+
+    public function test_update_customer_with_too_short_username(): void
+    {
+        $data = [
+            'first_name' => 'John',
+            'last_name' => 'Lastname',
+            'dob' => '1990-11-11',
+            'username' => 'a',
+            'password' => '12Password'
+        ];
+
+        $res = $this->putJson('/api/customers/1', $data, $this->getBasicAuthHeaders());
+
+        $res->assertStatus(422)
+            ->assertJsonValidationErrors(['username'])
+            ->assertJsonFragment([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => [
+                    'username' => ['The username field must be at least 2 characters.']
+                ]
+            ]);
+    }
+
+    public function test_update_customer_with_invalid_characters_in_username(): void
+    {
+        $data = [
+            'first_name' => 'John',
+            'last_name' => 'Lastname',
+            'dob' => '1990-11-11',
+            'username' => '£½£234ljlk',
+            'password' => '12Password'
+        ];
+
+        $res = $this->putJson('/api/customers/1', $data, $this->getBasicAuthHeaders());
+
+        $res->assertStatus(422)
+            ->assertJsonValidationErrors(['username'])
+            ->assertJsonFragment([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => [
+                    'username' => ['The username field format is invalid.']
+                ]
+            ]);
+    }
+
+    public function test_update_customer_with_empty_password(): void
+    {
+        $data = [
+            'first_name' => 'John',
+            'last_name' => 'Lastname',
+            'dob' => '1990-11-11',
+            'username' => 'toomas123',
+            'password' => ''
+        ];
+
+        $res = $this->putJson('/api/customers/1', $data, $this->getBasicAuthHeaders());
+
+        $res->assertStatus(422)
+            ->assertJsonValidationErrors(['password'])
+            ->assertJsonFragment([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => [
+                    'password' => ['The password field is required.']
+                ]
+            ]);
+    }
+
+    public function test_update_customer_with_too_short_password(): void
+    {
+        $data = [
+            'first_name' => 'John',
+            'last_name' => 'Lastname',
+            'dob' => '1990-11-11',
+            'username' => 'toomas123',
+            'password' => '1Aa'
+        ];
+
+        $res = $this->putJson('/api/customers/1', $data, $this->getBasicAuthHeaders());
+
+        $res->assertStatus(422)
+            ->assertJsonValidationErrors(['password'])
+            ->assertJsonFragment([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => [
+                    'password' => ['The password field must be at least 8 characters.']
+                ]
+            ]);
+    }
+
+    public function test_update_customer_with_faulty_password(): void
+    {
+        $data = [
+            'first_name' => 'John',
+            'last_name' => 'Lastname',
+            'dob' => '1990-11-11',
+            'username' => 'toomas123',
+            'password' => '1aaaaaaaaaaaa'
+        ];
+
+        $res = $this->putJson('/api/customers/1', $data, $this->getBasicAuthHeaders());
+
+        $res->assertStatus(422)
+            ->assertJsonValidationErrors(['password'])
+            ->assertJsonFragment([
+                'status' => 'error',
+                'message' => 'Validation failed',
+                'errors' => [
+                    'password' => ['The password field format is invalid.']
+                ]
+            ]);
     }
 
     public function test_delete_customer(): void

@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 
 /**
  * @OA\Schema(
@@ -16,7 +16,7 @@ use Illuminate\Foundation\Http\FormRequest;
  *     @OA\Property(property="password", type="string"),
  * )
  */
-class StoreCustomerRequest extends FormRequest
+class StoreCustomerRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,7 +29,7 @@ class StoreCustomerRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
@@ -37,7 +37,7 @@ class StoreCustomerRequest extends FormRequest
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'dob' => 'required|date',
-            'username' => 'required|regex:/^[a-zA-Z0-9]+(?:[\.-][a-zA-Z0-9]+)?$/|unique:customers',
+            'username' => 'required|min:2|regex:/^[a-zA-Z0-9]+(?:[\.-][a-zA-Z0-9]+)?$/|unique:customers',
             'password' => 'required|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/',
         ];
     }

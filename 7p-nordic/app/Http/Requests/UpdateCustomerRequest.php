@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Validation\Rule;
 
 /**
@@ -17,7 +17,7 @@ use Illuminate\Validation\Rule;
  *     @OA\Property(property="password", type="string"),
  * )
  */
-class UpdateCustomerRequest extends FormRequest
+class UpdateCustomerRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -30,7 +30,7 @@ class UpdateCustomerRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
@@ -45,6 +45,7 @@ class UpdateCustomerRequest extends FormRequest
                 'string',
                 Rule::unique('customers')->ignore($customerId),
                 'regex:/^[a-zA-Z0-9]+(?:[\.-][a-zA-Z0-9]+)?$/',
+                'min:2'
             ],
             'password' => 'required|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/',
         ];

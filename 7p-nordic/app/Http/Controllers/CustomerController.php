@@ -53,7 +53,7 @@ class CustomerController extends Controller
         $customers = QueryBuilder::for(Customer::class)
             ->defaultSort('id')
             ->defaultSorts(['id', 'first_name', 'last_name', 'dob', 'username'])
-            ->paginate();
+            ->get();
 
         return response()->json([
             'message' => 'Customers retrieved successfully',
