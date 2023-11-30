@@ -13,10 +13,12 @@ export default class ValidationService {
       validationErrors.last_name =
         'Last name is required and should consist of 2-20 alphabetical characters'
     }
-    if (!customerData.username || !/^[a-zA-Z]{4,20}$/.test(customerData.username)) {
+
+    if (!customerData.username || !/^[a-zA-Z0-9]+(?:[.-][a-zA-Z0-9]+)?$/.test(customerData.username)) {
       validationErrors.username =
-        'Username is required and should consist of 4-20 alphabetical characters'
+        'Username is required and should consist of 4-20 alphabetical characters and single . or -'
     }
+
     if (!customerData.dob) {
       validationErrors.dob = 'Date of birth is required'
     } else {
@@ -38,11 +40,13 @@ export default class ValidationService {
         validationErrors.dob = 'Customers age should be between 18 and 100 years old'
       }
     }
+
     if (!customerData.password) {
       validationErrors.password = 'Password is required'
     } else {
       // Validate password
       const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/
+
       if (!passwordRegex.test(customerData.password)) {
         validationErrors.password =
           'Password should be at least 8 characters long and include at least one uppercase letter and one digit'

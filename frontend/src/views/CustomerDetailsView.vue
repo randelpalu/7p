@@ -11,6 +11,7 @@
             <span v-if="nonEditableFields.includes(key)">{{ editedCustomer[key] }}</span>
             <input v-else-if="key === 'password'" type="password" v-model="editedCustomer[key]" />
             <input v-else v-model="editedCustomer[key]" />
+            <span v-if="validationErrors[key]" class="error-message">{{ validationErrors[key] }}</span>
           </tr>
         </table>
         <button type="submit" class="button">Save</button>
@@ -37,7 +38,7 @@ export default {
 
   methods: {
     validateForm() {
-      this.validationErrors = ValidationService.validateCustomerData(this.customerData)
+      this.validationErrors = ValidationService.validateCustomerData(this.editedCustomer)
 
       return Object.keys(this.validationErrors).length === 0
     },

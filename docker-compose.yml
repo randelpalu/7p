@@ -3,10 +3,10 @@ version: '3'
 services:
   laravel:
     build:
-      context: ./7p-nordic
-      dockerfile: Dockerfile.local
+      context: ./laravel
+      dockerfile: Dockerfile.localdev
     volumes:
-      - ./7p-nordic:/var/www/html
+      - ./laravel:/var/www/html
     ports:
       - "9000:9000"
     depends_on:
@@ -15,7 +15,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.local
+      dockerfile: Dockerfile.localdev
     volumes:
       - ./frontend:/app
     ports:
