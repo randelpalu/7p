@@ -11,14 +11,12 @@ cp .env.example .env
 ```sh
 cd laravel
 cp .env.example .env
-composer install
 cd ..
 ```
 
 ```sh
 cd frontend
 cp .env.example .env
-npm install
 cd ..
 ```
 
